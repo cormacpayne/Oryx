@@ -4,38 +4,16 @@
 # Licensed under the MIT license.
 # --------------------------------------------------------------------------------------------
 
+declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && cd .. && pwd )
+
 declare -r BUILD_NUMBER="$BUILD_BUILDNUMBER"
 declare -r DOCKER_SYSTEM_PRUNE="${ORYX_DOCKER_SYSTEM_PRUNE:-false}"
 
-echo
-echo "Printing all running containers and stopped containers"
-echo
-docker ps -a 
-echo
-echo "Kill all running containers and delete all stopped containers"
-echo
-docker kill $(docker ps -q)
-docker rm -f $(docker ps -a -q)
+source $REPO_DIR/__common.sh
 
-function UntagImages() {
-	local imagePattern=$1
-	local imagesToUntag=$(docker images --filter=reference="$imagePattern" --format "{{.Repository}}:{{.Tag}}")
+StopAndDeleteAllContainers
 
-	echo
-	echo "Found following images having the pattern '$imagePattern'. Untagging them ..."
-	echo $imagesToUntag
-	echo
-
-	if [ ! -z "$imagesToUntag" ]
-	then
-		docker rmi -f $imagesToUntag
-	fi
-}
-
-echo
-echo "Current list of docker images:"
-echo
-docker images
+PrintCurrentListOfImages
 
 # An image that is built in our pipelines is tagged with 'latest' and 'build number'.
 # The following is to untag an image with the 'build number' tag so that when the next time
@@ -73,19 +51,13 @@ UntagImages node:8.2.1
 UntagImages node:8.8.1
 UntagImages node:8.9.4
 
-echo
-echo "Updated list of docker images:"
-echo
-docker images
+PrintCurrentListOfImages
 
 echo
 echo "Cleanup: Run 'docker system prune': $DOCKER_SYSTEM_PRUNE"
 if [ "$DOCKER_SYSTEM_PRUNE" == "true" ]
 then
-    docker system prune -f
+    DockerSystemPrune
 
-    echo
-    echo "Updated list of docker images:"
-    echo
-    docker images
+    PrintCurrentListOfImages
 fi

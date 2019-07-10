@@ -1,0 +1,9 @@
+steps:
+- checkout: self
+  clean: true
+
+- task: ShellScript@2
+  displayName: 'Delete docker images'
+  inputs:
+    scriptPath: ./vsts/scripts/deleteDockerImages.sh
+
