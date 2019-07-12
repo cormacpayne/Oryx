@@ -9,7 +9,7 @@ declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && cd .. && pwd )
 declare -r BUILD_NUMBER="$BUILD_BUILDNUMBER"
 declare -r DOCKER_SYSTEM_PRUNE="${ORYX_DOCKER_SYSTEM_PRUNE:-false}"
 
-source $REPO_DIR/__common.sh
+source $REPO_DIR/vsts/scripts/__common.sh
 
 StopAndDeleteAllContainers
 
