@@ -4,7 +4,9 @@
 # Licensed under the MIT license.
 # --------------------------------------------------------------------------------------------
 
-declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && cd .. && pwd )
+#declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && cd .. && pwd )
+
+declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && pwd )
 
 source $REPO_DIR/vsts/scripts/__common.sh
 
