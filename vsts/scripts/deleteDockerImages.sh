@@ -8,9 +8,7 @@
 
 printenv
 
-declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && pwd )
-
-source $REPO_DIR/vsts/scripts/__common.sh
+source $BUILD_SOURCESDIRECTORY/vsts/scripts/__common.sh
 
 StopAndDeleteAllContainers
 
