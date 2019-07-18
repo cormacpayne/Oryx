@@ -23,7 +23,12 @@ else
     $buildBuildImagesScript "$@"
 fi
 
+echo "Setting the core dump file size to unlimited..."
+ulimit -c unlimited
+
 echo
 echo "Building and running tests..."
 cd "$TESTS_SRC_DIR/$testProjectName"
 dotnet test --test-adapter-path:. --logger:"xunit;LogFilePath=$ARTIFACTS_DIR\testResults\\$testProjectName.xml" -c $BUILD_CONFIGURATION
+
+ls -l /tmp/cores
