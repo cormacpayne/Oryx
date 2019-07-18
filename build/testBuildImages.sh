@@ -4,8 +4,11 @@
 # Licensed under the MIT license.
 # --------------------------------------------------------------------------------------------
 
-set -e
+#set -e
 
+ls -l /tmp/cores
+
+echo
 declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && pwd )
 declare -r buildBuildImagesScript="$REPO_DIR/build/buildBuildImages.sh"
 declare -r testProjectName="Oryx.BuildImage.Tests"
