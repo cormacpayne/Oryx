@@ -27,6 +27,7 @@ else
 fi
 
 echo "Setting the core dump file size to unlimited..."
+echo '/tmp/cores/core_%e.%p' | sudo tee /proc/sys/kernel/core_pattern
 ulimit -c unlimited
 
 echo
