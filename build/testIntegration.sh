@@ -61,5 +61,5 @@ docker pull "heroku/pack:18"
 dotnet test \
     $testCaseFilter \
     --test-adapter-path:. \
-    --logger:"xunit;LogFilePath=$ARTIFACTS_DIR/testResults/$testProjectName$integrationTestPlatform.Tests.xml" \
+    --logger:"xunit;LogFilePath=$TEST_RESULTS_DIR/$testProjectName$integrationTestPlatform.Tests.xml" \
     -c $BUILD_CONFIGURATION
