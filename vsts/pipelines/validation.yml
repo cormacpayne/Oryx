@@ -6,6 +6,13 @@ variables:
 - group: Oryx
 
 jobs:
+- job: Clean workspace
+  displayName: Cleanup
+  pool:
+    name: OryxLinux
+  workspace:
+    clean: all
+
 - job: Job_Security
   displayName: Security
   pool:
