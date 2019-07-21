@@ -6,13 +6,6 @@ variables:
 - group: Oryx
 
 jobs:
-- job: Clean workspace
-  displayName: Cleanup
-  pool:
-    name: OryxLinux
-  workspace:
-    clean: all
-
 - job: Job_Security
   displayName: Security
   pool:
@@ -24,6 +17,8 @@ jobs:
   displayName: Build and Test Build Image
   pool:
     name: OryxLinux
+  workspace:
+    clean: all
   timeoutInMinutes: 100
   steps:
   - script: |
@@ -39,6 +34,8 @@ jobs:
   displayName: Build and Test Runtime Images
   pool:
     name: OryxLinux
+  workspace:
+    clean: all
   timeoutInMinutes: 100
   steps:
   - script: |
