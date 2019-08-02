@@ -303,7 +303,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [Theory]
         [InlineData("latest", "6.10.2")]
         [InlineData("6", "6.10.2")]
-        [InlineData("6.9", "6.10.2")]
+        [InlineData("6.10", "6.10.2")]
         [InlineData("5", "5.6.0")]
         [InlineData("5.6", "5.6.0")]
         [InlineData("5.4", "5.4.2")]
