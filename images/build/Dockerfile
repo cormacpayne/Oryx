@@ -175,10 +175,10 @@ RUN set -e \
         nodeModulesDir="/opt/nodejs/$ver/lib/node_modules"; \
         npm_ver=`jq -r .version $nodeModulesDir/npm/package.json`; \
         if [ ! "$npm_ver" = "${npm_ver#6.}" ]; then \
-            echo "Upgrading node $ver's npm version from $npm_ver to 6.9.0"; \
+            echo "Upgrading node $ver's npm version from $npm_ver to 6.10.2"; \
             cd $nodeModulesDir; \
             PATH="/opt/nodejs/$ver/bin:$PATH" \
-            "$nodeModulesDir/npm/bin/npm-cli.js" install npm@6.9.0; \
+            "$nodeModulesDir/npm/bin/npm-cli.js" install npm@6.10.2; \
             echo; \
         fi; \
     done
@@ -253,8 +253,8 @@ RUN set -ex \
  && ln -s 5.4.2 /opt/npm/5.4 \
  && ln -s 5.6.0 /opt/npm/5.6 \
  && ln -s 5.6 /opt/npm/5 \
- && ln -s 6.9.0 /opt/npm/6.9 \
- && ln -s 6.9 /opt/npm/6 \
+ && ln -s 6.10.2 /opt/npm/6.10 \
+ && ln -s 6.10 /opt/npm/6 \
  && ln -s 6 /opt/npm/latest
 RUN set -ex \
  && . /tmp/__nodeVersions.sh \

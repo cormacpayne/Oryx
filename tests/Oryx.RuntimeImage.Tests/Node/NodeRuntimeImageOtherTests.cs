@@ -69,10 +69,10 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         // Only version 6 of npm is upgraded, so the following should remain unchanged.
         [InlineData("10.1", "5.6.0")]
         // Make sure the we get the upgraded version of npm in the following cases
-        [InlineData("10.10", "6.9.0")]
-        [InlineData("10.12", "6.9.0")]
-        [InlineData("10.14", "6.9.0")]
-        [InlineData("12", "6.9.0")]
+        [InlineData("10.10", "6.10.2")]
+        [InlineData("10.12", "6.10.2")]
+        [InlineData("10.14", "6.10.2")]
+        [InlineData("12", "6.10.2")]
         public void HasExpectedNpmVersion(string nodeTag, string expectedNpmVersion)
         {
             // Arrange & Act

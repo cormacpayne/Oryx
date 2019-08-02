@@ -269,9 +269,9 @@ namespace Microsoft.Oryx.BuildImage.Tests
         // Only version 6 of npm is upgraded, so the following should remain unchanged.
         [InlineData("10.1", "5.6.0")]
         // Make sure the we get the upgraded version of npm in the following cases
-        [InlineData("10.10.0", "6.9.0")]
-        [InlineData("10.14.2", "6.9.0")]
-        [InlineData(NodeVersions.Node10MajorMinorVersion, "6.9.0")]
+        [InlineData("10.10.0", "6.10.2")]
+        [InlineData("10.14.2", "6.10.2")]
+        [InlineData(NodeVersions.Node10MajorMinorVersion, "6.10.2")]
         public void UsesExpectedNpmVersion(string nodeVersion, string expectedOutput)
         {
             // Arrange
@@ -301,9 +301,9 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
         [Trait("platform", "node")]
         [Theory]
-        [InlineData("latest", "6.9.0")]
-        [InlineData("6", "6.9.0")]
-        [InlineData("6.9", "6.9.0")]
+        [InlineData("latest", "6.10.2")]
+        [InlineData("6", "6.10.2")]
+        [InlineData("6.9", "6.10.2")]
         [InlineData("5", "5.6.0")]
         [InlineData("5.6", "5.6.0")]
         [InlineData("5.4", "5.4.2")]
