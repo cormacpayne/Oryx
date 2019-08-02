@@ -128,4 +128,15 @@
       file-name-prefix: __
     - type: csharp
       directory: src/BuildScriptGenerator/Node
-      namespace: Microsoft.Oryx.BuildScriptGenerator.Node      
+      namespace: Microsoft.Oryx.BuildScriptGenerator.Node
+- name: npm-versions
+  constants:
+    npm6-version: 6.10.2
+    npm5-version: 5.6.0
+  outputs:
+    - type: shell
+      directory: build
+      file-name-prefix: __
+    - type: csharp
+      directory: src/BuildScriptGenerator/Node
+      namespace: Microsoft.Oryx.BuildScriptGenerator.Node
