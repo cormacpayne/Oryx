@@ -7,32 +7,29 @@
 set -e
 
 declare -r DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
-declare -r IMAGE_NAME_PLACEHOLDER="%DOTNETCORE_BASE_IMAGE%"
+declare -r RUNTIME_BASE_IMAGE_NAME_PLACEHOLDER="%RUNTIME_BASE_IMAGE_NAME%"
+declare -r BASE_BUILD_NUMBER="20190802.1"
 
-function generateFiles()
-{
-	local versionsFile="$1"
-	local dockerTemplate="$2"
+function generateDockerFile() {
+	local versionDirectory=$1
+	local dockerFileTemplate=$2
+	echo "Generating Dockerfile for image $versionDirectory..."
 
-	# Example line:
-	# 1.0, microsoft/dotnet:1.0.13-runtime
-	while IFS= read -r VERSION_BASEIMAGE_TUPLE_LINE || [[ -n $VERSION_BASEIMAGE_TUPLE_LINE ]]
-	do
-		IFS=',' read -ra VERSION_BASEIMAGE_TUPLE <<< "$VERSION_BASEIMAGE_TUPLE_LINE"
-		VERSION_DIRECTORY="${VERSION_BASEIMAGE_TUPLE[0]}"
-		DOTNET_IMAGE_NAME="${VERSION_BASEIMAGE_TUPLE[1]}"
-		# Trim beginning whitespace
-		DOTNET_IMAGE_NAME="$(echo -e "${DOTNET_IMAGE_NAME}" | sed -e 's/^[[:space:]]*//')"
-		echo "Generating Dockerfile for image '$DOTNET_IMAGE_NAME' in directory '$VERSION_DIRECTORY'..."
-		
-		mkdir -p "$DIR/$VERSION_DIRECTORY/"
-		TARGET_DOCKERFILE="$DIR/$VERSION_DIRECTORY/Dockerfile"
-		cp "$dockerTemplate" "$TARGET_DOCKERFILE"
+	TARGET_DOCKERFILE="$DIR/$versionDirectory/Dockerfile"
+	cp "$dockerFileTemplate" "$TARGET_DOCKERFILE"
 
-		# Replace placeholders
-		sed -i "s|$IMAGE_NAME_PLACEHOLDER|$DOTNET_IMAGE_NAME|g" "$TARGET_DOCKERFILE"
-	done < "$versionsFile"
+	# Replace placeholders
+	RUNTIME_BASE_IMAGE_NAME="mcr.microsoft.com/oryx/dotnetcore-base:$versionDirectory-$BASE_BUILD_NUMBER"
+	sed -i "s|$RUNTIME_BASE_IMAGE_NAME_PLACEHOLDER|$RUNTIME_BASE_IMAGE_NAME|g" "$TARGET_DOCKERFILE"
 }
 
-generateFiles "$DIR/dotnetCoreVersionsWithCurlUpdate.txt" "$DIR/DockerfileWithCurlUpdate.template"
-generateFiles "$DIR/dotnetCoreVersions.txt" "$DIR/Dockerfile.template"
+cd $DIR
+for VERSION_DIRECTORY in $(find . -type d -iname '[0-9]*' -printf '%f\n')
+do
+	if [ "$VERSION_DIRECTORY" == "1.0" ] || [ "$VERSION_DIRECTORY" == "1.1" ] || [ "$VERSION_DIRECTORY" == "2.0" ]
+	then
+		generateDockerFile "$VERSION_DIRECTORY" "$DIR/DockerfileWithCurlUpdate.template"
+	else
+		generateDockerFile "$VERSION_DIRECTORY" "$DIR/Dockerfile.template"
+	fi
+done

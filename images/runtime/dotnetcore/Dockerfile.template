@@ -9,7 +9,7 @@ ENV GIT_COMMIT=${GIT_COMMIT}
 ENV BUILD_NUMBER=${BUILD_NUMBER}
 RUN ./build.sh dotnetcore /opt/startupcmdgen/startupcmdgen
 
-FROM %DOTNETCORE_BASE_IMAGE%
+FROM %RUNTIME_BASE_IMAGE_NAME%
 
 RUN apt-get update \
   && apt-get install -y \

@@ -47,6 +47,7 @@ fi
 # the latest version of its own base image. 
 
 docker build --pull -f "$RUNTIME_BASE_IMAGE_DOCKERFILE_PATH" -t "$RUNTIME_BASE_IMAGE_NAME" $REPO_DIR
+docker build --pull -f "$RUNTIME_BASE_IMAGE_DOCKERFILE_BUSTER_PATH" -t "$RUNTIME_BASE_IMAGE_NAME-buster" $REPO_DIR
 
 # Write the list of images that were built to artifacts folder
 mkdir -p "$ARTIFACTS_DIR/images"

@@ -118,6 +118,10 @@ elif [ "$imageName" == "node" ]
 then
   echo ""
   retagBaseImages node-runtimeimage-bases.txt $imageName
+elif [ "$imageName" == "dotnetcore" ]
+then
+  echo ""
+  retagBaseImages dotnetcore-runtimeimage-bases.txt $imageName
 elif [ "$imageName" == "python-build" ]
 then
   echo ""
