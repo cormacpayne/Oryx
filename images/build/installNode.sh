@@ -6,25 +6,32 @@ function tryCreateLink() {
     local linkSource="$1"
     local linkDestination="$2"
 
-    if [ -d "/opt/nodejs/$linkSource" ] || [ -L "/opt/nodejs/$linkSource" ]
+    if [ -d "$linkSource" ] || [ -L "$linkSource" ]
     then
         ln -s $linkSource $linkDestination
     fi
 }
 
-curl -sL https://git.io/n-install | bash -s -- -ny
+curl -sL https://git.io/n-install | bash -s -- -ny -
 
 allVersions=(4.4.7 4.5.0 4.8.0 6.2.2 6.6.0 6.9.3 6.10.3 6.11.0 8.0.0 8.1.4 8.2.1 8.8.1 8.9.4 8.11.2 8.12.0 8.15.1 9.4.0 10.1.0 10.10.0 10.14.2 $NODE6_VERSION $NODE8_VERSION $NODE10_VERSION $NODE12_VERSION)
 versionsToInstall="$@"
 if [ "$#" -eq 0 ]
 then
-    versionToInstall=( "${allVersions[@]}" )
+    len=${#allVersions[@]}
+    for (( i=0; i<$len; i++ ))
+    do
+        version="${allVersions[$i]}"
+        ~/n/bin/n -d "$version"
+    done
+else
+    len=${#versionToInstall[@]}
+    for (( i=0; i<$len; i++ ))
+    do
+        version="${versionToInstall[$i]}"
+        ~/n/bin/n -d "$version"
+    done
 fi
-
-for version in $versionToInstall
-do
-    ~/n/bin/n -d "$version"
-done
 
 mv /usr/local/n/versions/node /opt/nodejs
 rm -rf /usr/local/n ~/n
