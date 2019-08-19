@@ -4,7 +4,9 @@
 # Licensed under the MIT license.
 # --------------------------------------------------------------------------------------------
 
-set -e
+set -ex
+
+versionsToInstall="$@"
 
 shouldInstallVersion () {
     # If no arguments are given, we will assume all versions are to be installed
@@ -14,7 +16,7 @@ shouldInstallVersion () {
     fi
 
     local versionToLookFor="$1"
-    for version in "$@"
+    for version in $versionsToInstall
     do
         if [ "$versionToLookFor" == "$version" ]
         then
