@@ -34,21 +34,6 @@ RUN apt-get update \
 
 # Install .NET Core
 FROM main AS dotnet-install
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends \
-        libc6 \
-        libgcc1 \
-        libgssapi-krb5-2 \
-        libicu57 \
-        liblttng-ust0 \
-        libssl1.0.2 \
-        libstdc++6 \
-        zlib1g \
-        # For .NET Core 1.1
-        libcurl3 \
-        libuuid1 \
-        libunwind8 \
-    && rm -rf /var/lib/apt/lists/*
 
 ENV DOTNET_RUNNING_IN_CONTAINER=true \
     DOTNET_USE_POLLING_FILE_WATCHER=true \
@@ -56,87 +41,13 @@ ENV DOTNET_RUNNING_IN_CONTAINER=true \
     DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1 \
 	NUGET_PACKAGES=/var/nuget
 
-RUN mkdir /var/nuget
 COPY build/__dotNetCoreSdkVersions.sh /tmp
 COPY build/__dotNetCoreRunTimeVersions.sh /tmp
-COPY images/build/installDotNetCoreSdk.sh /
-RUN chmod +x /installDotNetCoreSdk.sh
-
-# Check https://www.microsoft.com/net/platform/support-policy for support policy of .NET Core versions
-
-RUN . /tmp/__dotNetCoreSdkVersions.sh && \
-    DOTNET_SDK_VER=$DOT_NET_CORE_11_SDK_VERSION \
-    DOTNET_SDK_SHA=$DOT_NET_CORE_11_SDK_SHA512 \
-    DOTNET_SDK_URL=https://dotnetcli.blob.core.windows.net/dotnet/Sdk/$DOTNET_SDK_VER/dotnet-dev-debian.9-x64.$DOTNET_SDK_VER.tar.gz \
-    # To save disk space do not install packages for this old version which is soon going to be out of support
-    INSTALL_PACKAGES=false \
-    /installDotNetCoreSdk.sh
-
-RUN . /tmp/__dotNetCoreSdkVersions.sh && \
-    DOTNET_SDK_VER=$DOT_NET_CORE_21_SDK_VERSION \
-    DOTNET_SDK_SHA=$DOT_NET_CORE_21_SDK_SHA512 \
-    /installDotNetCoreSdk.sh
-
-RUN . /tmp/__dotNetCoreSdkVersions.sh && \
-    DOTNET_SDK_VER=$DOT_NET_CORE_22_SDK_VERSION \
-    DOTNET_SDK_SHA=$DOT_NET_CORE_22_SDK_SHA512 \
-    /installDotNetCoreSdk.sh
-
-RUN . /tmp/__dotNetCoreSdkVersions.sh && \
-    DOTNET_SDK_VER=$DOT_NET_CORE_30_SDK_VERSION_PREVIEW_NAME \
-    DOTNET_SDK_SHA=$DOT_NET_CORE_30_SDK_SHA512 \
-    /installDotNetCoreSdk.sh
-
-RUN set -ex \
-    rm -rf /tmp/NuGetScratch \
-    && find /var/nuget -type d -exec chmod 777 {} \;
-
-RUN set -ex \
- && sdksDir=/opt/dotnet/sdks \
- && cd $sdksDir \
- && ln -s 1.1 1 \
- && ln -s 2.1 2 \
- && ln -s 3.0 3
-
-RUN set -ex \
- && dotnetDir=/opt/dotnet \
- && sdksDir=$dotnetDir/sdks \
- && runtimesDir=$dotnetDir/runtimes \
- && mkdir -p $runtimesDir \
- && cd $runtimesDir \
- && . /tmp/__dotNetCoreSdkVersions.sh \
- && . /tmp/__dotNetCoreRunTimeVersions.sh \
- # 1.1 sdk <-- 1.0 runtime's sdk
- && mkdir $NET_CORE_APP_10 \
- && ln -s $NET_CORE_APP_10 1.0 \
- && ln -s $sdksDir/$DOT_NET_CORE_11_SDK_VERSION $NET_CORE_APP_10/sdk \
- # 1.1 sdk <-- 1.1 runtime's sdk
- && mkdir $NET_CORE_APP_11 \
- && ln -s $NET_CORE_APP_11 1.1 \
- && ln -s 1.1 1 \
- && ln -s $sdksDir/$DOT_NET_CORE_11_SDK_VERSION $NET_CORE_APP_11/sdk \
- # 2.1 sdk <-- 2.0 runtime's sdk
- && mkdir $NET_CORE_APP_20 \
- && ln -s $NET_CORE_APP_20 2.0 \
- && ln -s $sdksDir/$DOT_NET_CORE_21_SDK_VERSION $NET_CORE_APP_20/sdk \
- # 2.1 sdk <-- 2.1 runtime's sdk
- && mkdir $NET_CORE_APP_21 \
- && ln -s $NET_CORE_APP_21 2.1 \
- && ln -s 2.1 2 \
- && ln -s $sdksDir/$DOT_NET_CORE_21_SDK_VERSION $NET_CORE_APP_21/sdk \
- # 2.2 sdk <-- 2.2 runtime's sdk
- && mkdir $NET_CORE_APP_22 \
- && ln -s $NET_CORE_APP_22 2.2 \
- && ln -s $sdksDir/$DOT_NET_CORE_22_SDK_VERSION $NET_CORE_APP_22/sdk \
- # 3.0 sdk <-- 3.0 runtime's sdk
- && mkdir $NET_CORE_APP_30 \
- && ln -s $NET_CORE_APP_30 3.0 \
- && ln -s 3.0 3 \
- && ln -s $sdksDir/$DOT_NET_CORE_30_SDK_VERSION $NET_CORE_APP_30/sdk \
- # LTS sdk <-- LTS runtime's sdk
- && ln -s 2.1 lts \
- && ltsSdk=$(readlink lts/sdk) \
- && ln -s $ltsSdk/dotnet /usr/local/bin/dotnet
+COPY images/build/installDotNetCore.sh /tmp
+COPY images/build/installDotNetCoreSdk.sh /tmp
+RUN chmod +x /tmp/installDotNetCoreSdk.sh
+RUN chmod +x /tmp/installDotNetCore.sh
+RUN /tmp/installDotNetCore.sh "1.1" "2.1" "2.2" "3.0"
 
 # Install Node.js, NPM, Yarn
 FROM main AS node-install

@@ -29,26 +29,23 @@ apt-get update \
         libssl1.0.2 \
         libstdc++6 \
         zlib1g \
-        # For .NET Core 1.1
+    && rm -rf /var/lib/apt/lists/*
+
+mkdir /var/nuget
+
+# Check https://www.microsoft.com/net/platform/support-policy for support policy of .NET Core versions
+source /tmp/__dotNetCoreSdkVersions.sh
+source /tmp/__dotNetCoreRunTimeVersions.sh
+
+if containsVersion "$DOT_NET_CORE_11_SDK_VERSION"
+then
+    apt-get update \
+    && apt-get install -y --no-install-recommends \
         libcurl3 \
         libuuid1 \
         libunwind8 \
     && rm -rf /var/lib/apt/lists/*
 
-mkdir /var/nuget
-
-cp build/__dotNetCoreSdkVersions.sh /tmp
-cp build/__dotNetCoreRunTimeVersions.sh /tmp
-cp images/build/installDotNetCoreSdk.sh /tmp
-chmod +x /tmp/installDotNetCoreSdk.sh
-
-# Check https://www.microsoft.com/net/platform/support-policy for support policy of .NET Core versions
-
-source . /tmp/__dotNetCoreSdkVersions.sh
-source . /tmp/__dotNetCoreRunTimeVersions.sh
-
-if containsVersion "$DOT_NET_CORE_11_SDK_VERSION"
-then
     DOTNET_SDK_VER=$DOT_NET_CORE_11_SDK_VERSION \
     DOTNET_SDK_SHA=$DOT_NET_CORE_11_SDK_SHA512 \
     DOTNET_SDK_URL=https://dotnetcli.blob.core.windows.net/dotnet/Sdk/$DOTNET_SDK_VER/dotnet-dev-debian.9-x64.$DOTNET_SDK_VER.tar.gz \
