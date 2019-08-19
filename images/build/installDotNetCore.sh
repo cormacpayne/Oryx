@@ -104,10 +104,10 @@ dotnetDir=/opt/dotnet \
 if shouldInstallVersion "$DOT_NET_CORE_11_SDK_VERSION"
 then
     # 1.1 sdk <-- 1.0 runtime's sdk
+    # 1.1 sdk <-- 1.1 runtime's sdk
     mkdir $NET_CORE_APP_10 \
     && ln -s $NET_CORE_APP_10 1.0 \
     && ln -s $sdksDir/$DOT_NET_CORE_11_SDK_VERSION $NET_CORE_APP_10/sdk \
-    # 1.1 sdk <-- 1.1 runtime's sdk
     && mkdir $NET_CORE_APP_11 \
     && ln -s $NET_CORE_APP_11 1.1 \
     && ln -s 1.1 1 \
@@ -117,10 +117,10 @@ fi
 if shouldInstallVersion "$DOT_NET_CORE_21_SDK_VERSION"
 then
     # 2.1 sdk <-- 2.0 runtime's sdk
+    # 2.1 sdk <-- 2.1 runtime's sdk
     mkdir $NET_CORE_APP_20 \
     && ln -s $NET_CORE_APP_20 2.0 \
     && ln -s $sdksDir/$DOT_NET_CORE_21_SDK_VERSION $NET_CORE_APP_20/sdk \
-    # 2.1 sdk <-- 2.1 runtime's sdk
     && mkdir $NET_CORE_APP_21 \
     && ln -s $NET_CORE_APP_21 2.1 \
     && ln -s 2.1 2 \
@@ -138,11 +138,11 @@ fi
 if shouldInstallVersion "$DOT_NET_CORE_30_SDK_VERSION"
 then
     # 3.0 sdk <-- 3.0 runtime's sdk
+    # LTS sdk <-- LTS runtime's sdk
     mkdir $NET_CORE_APP_30 \
     && ln -s $NET_CORE_APP_30 3.0 \
     && ln -s 3.0 3 \
     && ln -s $sdksDir/$DOT_NET_CORE_30_SDK_VERSION $NET_CORE_APP_30/sdk \
-    # LTS sdk <-- LTS runtime's sdk
     && ln -s 2.1 lts \
     && ltsSdk=$(readlink lts/sdk) \
     && ln -s $ltsSdk/dotnet /usr/local/bin/dotnet
