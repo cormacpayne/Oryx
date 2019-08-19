@@ -6,7 +6,13 @@
 
 set -e
 
-containsVersion () {
+shouldInstallVersion () {
+    # If no arguments are given, we will assume all versions are to be installed
+    if [ "$#" -eq 0 ]
+    then
+        return 0
+    fi
+
     local versionToLookFor="$1"
     for version in "$@"
     do
@@ -37,7 +43,7 @@ mkdir /var/nuget
 source /tmp/__dotNetCoreSdkVersions.sh
 source /tmp/__dotNetCoreRunTimeVersions.sh
 
-if containsVersion "$DOT_NET_CORE_11_SDK_VERSION"
+if shouldInstallVersion "$DOT_NET_CORE_11_SDK_VERSION"
 then
     echo "Installing .NET Core SDK '$DOT_NET_CORE_11_SDK_VERSION'..."
     apt-get update \
@@ -54,7 +60,7 @@ then
     /tmp/installDotNetCoreSdk.sh
 fi
 
-if containsVersion "$DOT_NET_CORE_21_SDK_VERSION"
+if shouldInstallVersion "$DOT_NET_CORE_21_SDK_VERSION"
 then
     echo "Installing $DOT_NET_CORE_21_SDK_VERSION..."
     DOTNET_SDK_VER=$DOT_NET_CORE_21_SDK_VERSION \
@@ -62,7 +68,7 @@ then
     /tmp/installDotNetCoreSdk.sh
 fi
 
-if containsVersion "$DOT_NET_CORE_22_SDK_VERSION"
+if shouldInstallVersion "$DOT_NET_CORE_22_SDK_VERSION"
 then
     echo "Installing $DOT_NET_CORE_22_SDK_VERSION..."
     DOTNET_SDK_VER=$DOT_NET_CORE_22_SDK_VERSION \
@@ -70,7 +76,7 @@ then
     /tmp/installDotNetCoreSdk.sh
 fi
 
-if containsVersion "$DOT_NET_CORE_30_SDK_VERSION"
+if shouldInstallVersion "$DOT_NET_CORE_30_SDK_VERSION"
 then
     echo "Installing $DOT_NET_CORE_30_SDK_VERSION..."
     DOTNET_SDK_VER=$DOT_NET_CORE_30_SDK_VERSION_PREVIEW_NAME \
@@ -93,7 +99,7 @@ dotnetDir=/opt/dotnet \
  && mkdir -p $runtimesDir \
  && cd $runtimesDir
 
-if containsVersion "$DOT_NET_CORE_11_SDK_VERSION"
+if shouldInstallVersion "$DOT_NET_CORE_11_SDK_VERSION"
 then
     # 1.1 sdk <-- 1.0 runtime's sdk
     mkdir $NET_CORE_APP_10 \
@@ -106,7 +112,7 @@ then
     && ln -s $sdksDir/$DOT_NET_CORE_11_SDK_VERSION $NET_CORE_APP_11/sdk
 fi
 
-if containsVersion "$DOT_NET_CORE_21_SDK_VERSION"
+if shouldInstallVersion "$DOT_NET_CORE_21_SDK_VERSION"
 then
     # 2.1 sdk <-- 2.0 runtime's sdk
     mkdir $NET_CORE_APP_20 \
@@ -119,7 +125,7 @@ then
     && ln -s $sdksDir/$DOT_NET_CORE_21_SDK_VERSION $NET_CORE_APP_21/sdk
 fi
 
-if containsVersion "$DOT_NET_CORE_22_SDK_VERSION"
+if shouldInstallVersion "$DOT_NET_CORE_22_SDK_VERSION"
 then
     # 2.2 sdk <-- 2.2 runtime's sdk
     mkdir $NET_CORE_APP_22 \
@@ -127,7 +133,7 @@ then
     && ln -s $sdksDir/$DOT_NET_CORE_22_SDK_VERSION $NET_CORE_APP_22/sdk
 fi
 
-if containsVersion "$DOT_NET_CORE_30_SDK_VERSION"
+if shouldInstallVersion "$DOT_NET_CORE_30_SDK_VERSION"
 then
     # 3.0 sdk <-- 3.0 runtime's sdk
     mkdir $NET_CORE_APP_30 \

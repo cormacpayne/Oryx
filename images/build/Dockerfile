@@ -47,7 +47,7 @@ COPY images/build/installDotNetCore.sh /tmp
 COPY images/build/installDotNetCoreSdk.sh /tmp
 RUN chmod +x /tmp/installDotNetCoreSdk.sh
 RUN chmod +x /tmp/installDotNetCore.sh
-RUN /tmp/installDotNetCore.sh "1.1" "2.1" "2.2" "3.0"
+RUN /tmp/installDotNetCore.sh "2.1.701"
 
 # Install Node.js, NPM, Yarn
 FROM main AS node-install
