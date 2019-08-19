@@ -52,10 +52,10 @@ RUN /tmp/installDotNetCore.sh
 # Install Node.js, NPM, Yarn
 FROM main AS node-install
 COPY build/__nodeVersions.sh /tmp
-RUN chmod a+x /tmp/__nodeVersions.sh
 COPY images/build/installNode.sh /tmp
-RUN chmod +x /tmp/installNode.sh
 COPY images/receivePgpKeys.sh /tmp/scripts/receivePgpKeys.sh
+RUN chmod a+x /tmp/__nodeVersions.sh
+RUN chmod +x /tmp/installNode.sh
 RUN chmod +x /tmp/scripts/receivePgpKeys.sh
 RUN /tmp/installNode.sh
 
