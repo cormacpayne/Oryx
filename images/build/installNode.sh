@@ -6,7 +6,7 @@ function tryCreateLink() {
     local linkSource="$1"
     local linkDestination="$2"
 
-    if [ -d "$linkSource" ] || [ -L "$linkSource" ]
+    if [ -d "/opt/nodejs/$linkSource" ] || [ -L "/opt/nodejs/$linkSource" ]
     then
         ln -s $linkSource $linkDestination
     fi
