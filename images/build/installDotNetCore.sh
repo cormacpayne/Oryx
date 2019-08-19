@@ -10,7 +10,7 @@ containsVersion () {
     local versionToLookFor="$1"
     for version in "$@"
     do
-        if [ "$versionToLookFor" == "" ]
+        if [ "$versionToLookFor" == "$version" ]
         then
             return 0
         else
@@ -39,6 +39,7 @@ source /tmp/__dotNetCoreRunTimeVersions.sh
 
 if containsVersion "$DOT_NET_CORE_11_SDK_VERSION"
 then
+    echo "Installing .NET Core SDK '$DOT_NET_CORE_11_SDK_VERSION'..."
     apt-get update \
     && apt-get install -y --no-install-recommends \
         libcurl3 \
@@ -56,6 +57,7 @@ fi
 
 if containsVersion "$DOT_NET_CORE_21_SDK_VERSION"
 then
+    echo "Installing $DOT_NET_CORE_21_SDK_VERSION..."
     DOTNET_SDK_VER=$DOT_NET_CORE_21_SDK_VERSION \
     DOTNET_SDK_SHA=$DOT_NET_CORE_21_SDK_SHA512 \
     /tmp/installDotNetCoreSdk.sh
@@ -63,6 +65,7 @@ fi
 
 if containsVersion "$DOT_NET_CORE_22_SDK_VERSION"
 then
+    echo "Installing $DOT_NET_CORE_22_SDK_VERSION..."
     DOTNET_SDK_VER=$DOT_NET_CORE_22_SDK_VERSION \
     DOTNET_SDK_SHA=$DOT_NET_CORE_22_SDK_SHA512 \
     /tmp/installDotNetCoreSdk.sh
@@ -70,6 +73,7 @@ fi
 
 if containsVersion "$DOT_NET_CORE_30_SDK_VERSION"
 then
+    echo "Installing $DOT_NET_CORE_30_SDK_VERSION..."
     DOTNET_SDK_VER=$DOT_NET_CORE_30_SDK_VERSION_PREVIEW_NAME \
     DOTNET_SDK_SHA=$DOT_NET_CORE_30_SDK_SHA512 \
     /tmp/installDotNetCoreSdk.sh

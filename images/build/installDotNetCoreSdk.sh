@@ -7,7 +7,7 @@
 set -e
 
 echo
-echo "Installing .NET Core SDK $DOTNET_SDK_VER ..."
+echo "Installing .NET Core SDK '$DOTNET_SDK_VER'..."
 echo
 
 # .NET Core 1.1 follows a different pattern for url, so we give a chance for the caller
