@@ -75,7 +75,7 @@ tryCreateLink 4.4.7 /opt/nodejs/4.4 \
  && tryCreateLink 6.6.0 /opt/nodejs/6.6 \
  && tryCreateLink 6.9.3 /opt/nodejs/6.9 \
  && tryCreateLink 6.10.3 /opt/nodejs/6.10 \
- && tryCreateLink 6.11.0 /opt/nodejs/6.11 \ 
+ && tryCreateLink 6.11.0 /opt/nodejs/6.11 \
  && tryCreateLink 8.0.0 /opt/nodejs/8.0 \
  && tryCreateLink 8.1.4 /opt/nodejs/8.1 \
  && tryCreateLink 8.2.1 /opt/nodejs/8.2 \
@@ -89,7 +89,7 @@ tryCreateLink 4.4.7 /opt/nodejs/4.4 \
  && tryCreateLink 10.1.0 /opt/nodejs/10.1 \
  && tryCreateLink 10.10.0 /opt/nodejs/10.10 \
  && tryCreateLink 10.14.2 /opt/nodejs/10.14 \
- && tryCreateLink $NODE6_VERSION /opt/nodejs/$NODE6_MAJOR_MINOR_VERSION \ 
+ && tryCreateLink $NODE6_VERSION /opt/nodejs/$NODE6_MAJOR_MINOR_VERSION \
  && tryCreateLink $NODE6_MAJOR_MINOR_VERSION /opt/nodejs/6 \
  && tryCreateLink $NODE8_VERSION /opt/nodejs/$NODE8_MAJOR_MINOR_VERSION \
  && tryCreateLink $NODE8_MAJOR_MINOR_VERSION /opt/nodejs/8 \
