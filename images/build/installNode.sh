@@ -6,10 +6,12 @@ function tryCreateLink() {
     local linkSource="$1"
     local linkDestination="$2"
 
-    if [ -d "$linkSource" ] || [ -L "$linkSource" ]
-    then
-        ln -s $linkSource $linkDestination
-    fi
+    #if [ -d "$linkSource" ] || [ -L "$linkSource" ]
+    #then
+    #    ln -s $linkSource $linkDestination
+    #fi
+
+    ln -s $linkSource $linkDestination
 }
 
 curl -sL https://git.io/n-install | bash -s -- -ny -
