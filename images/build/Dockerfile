@@ -373,45 +373,6 @@ RUN ./build.sh python     /opt/startupcmdgen/python
 # End build run script generators
 ###
 
-FROM main as LtsOnly
-WORKDIR /
-# Copy Benv
-COPY images/build/benv.sh /usr/local/bin/benv
-RUN chmod +x /usr/local/bin/benv
-RUN mkdir -p /usr/local/share/pip-cache/lib
-RUN chmod -R 777 /usr/local/share/pip-cache
-# 1. Copy Python sdk
-# It's not clear whether these are needed at runtime...
-RUN apt-get update \
- && apt-get install -y --no-install-recommends \
-        tk-dev \
-        uuid-dev \
- && rm -rf /var/lib/apt/lists/*
-# https://github.com/docker-library/python/issues/147
-ENV PYTHONIOENCODING UTF-8
-COPY build/__pythonVersions.sh /tmp
-COPY --from=py37-build-base /opt /opt
-RUN . /tmp/__pythonVersions.sh && set -ex \
- && [ -d "/opt/python/$PYTHON37_VERSION" ] && echo /opt/python/$PYTHON37_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
- && ldconfig
-RUN . /tmp/__pythonVersions.sh && set -ex \
- && ln -s $PYTHON37_VERSION /opt/python/latest \
- && ln -s $PYTHON37_VERSION /opt/python/3.7 \
- && ln -s 3.7 /opt/python/3
-RUN set -ex \
- && cd /usr/local/bin \
- && cp -sn /opt/python/3/bin/* .
-# 2. Copy dotnetcore sdk
-ENV NUGET_XMLDOC_MODE=skip \
-	DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1 \
-	NUGET_PACKAGES=/var/nuget
-COPY --from=dotnet-install /opt/dotnet/sdks/2.1.701 /opt/dotnet/sdks/2.1.701
-COPY --from=dotnet-install /var/nuget /var/nuget
-COPY --from=dotnet-install /usr/local/bin /usr/local/bin
-# Grant read-write permissions to the nuget folder so that dotnet restore
-# can write into it.
-RUN chmod a+rw /var/nuget
-
 FROM python AS final
 WORKDIR /
 
