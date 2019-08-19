@@ -14,6 +14,8 @@ function tryCreateLink() {
 
 curl -sL https://git.io/n-install | bash -s -- -ny -
 
+source /tmp/__nodeVersions.sh
+
 allVersions=(4.4.7 4.5.0 4.8.0 6.2.2 6.6.0 6.9.3 6.10.3 6.11.0 8.0.0 8.1.4 8.2.1 8.8.1 8.9.4 8.11.2 8.12.0 8.15.1 9.4.0 10.1.0 10.10.0 10.14.2 $NODE6_VERSION $NODE8_VERSION $NODE10_VERSION $NODE12_VERSION)
 versionsToInstall="$@"
 if [ "$#" -eq 0 ]
@@ -62,8 +64,6 @@ do
         fi
     fi
 done
-
-source /tmp/__nodeVersions.sh
 
 /tmp/scripts/receivePgpKeys.sh 6A010C5166006599AA17F08146C2130DFD2497F5 \
 && curl -fsSLO --compressed "https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz" \
