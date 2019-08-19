@@ -50,7 +50,6 @@ then
     DOTNET_SDK_VER=$DOT_NET_CORE_11_SDK_VERSION \
     DOTNET_SDK_SHA=$DOT_NET_CORE_11_SDK_SHA512 \
     DOTNET_SDK_URL=https://dotnetcli.blob.core.windows.net/dotnet/Sdk/$DOTNET_SDK_VER/dotnet-dev-debian.9-x64.$DOTNET_SDK_VER.tar.gz \
-    # To save disk space do not install packages for this old version which is soon going to be out of support
     INSTALL_PACKAGES=false \
     /tmp/installDotNetCoreSdk.sh
 fi
