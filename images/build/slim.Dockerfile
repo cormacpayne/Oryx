@@ -13,7 +13,6 @@ ENV LANG C.UTF-8
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         git \
-        jq \
         make \
         unzip \
         # The tools in this package are used when installing packages for Python
@@ -90,6 +89,10 @@ RUN set -ex \
 
 # Install Node.js, NPM, Yarn
 FROM main AS node-install
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        jq \
+    && rm -rf /var/lib/apt/lists/*
 COPY build/__nodeVersions.sh /tmp
 RUN chmod a+x /tmp/__nodeVersions.sh \
  && . /tmp/__nodeVersions.sh \
