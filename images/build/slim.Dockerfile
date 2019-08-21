@@ -13,7 +13,6 @@ ENV LANG C.UTF-8
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         git \
-        jq \
         make \
         unzip \
         # The tools in this package are used when installing packages for Python
@@ -51,16 +50,16 @@ ENV DOTNET_RUNNING_IN_CONTAINER=true \
 	NUGET_PACKAGES=/var/nuget
 
 RUN mkdir /var/nuget
-COPY build/__dotNetCoreSdkVersions.sh /tmp
-COPY build/__dotNetCoreRunTimeVersions.sh /tmp
-COPY images/build/installDotNetCore.sh /
-RUN chmod +x /installDotNetCore.sh
+COPY build/__dotNetCoreSdkVersions.sh /tmp/scripts
+COPY build/__dotNetCoreRunTimeVersions.sh /tmp/scripts
+COPY images/build/installDotNetCore.sh /tmp/scripts
+RUN chmod +x /tmp/scripts/installDotNetCore.sh
 
 # Check https://www.microsoft.com/net/platform/support-policy for support policy of .NET Core versions
-RUN . /tmp/__dotNetCoreSdkVersions.sh && \
+RUN . /tmp/scripts/__dotNetCoreSdkVersions.sh && \
     DOTNET_SDK_VER=$DOT_NET_CORE_21_SDK_VERSION \
     DOTNET_SDK_SHA=$DOT_NET_CORE_21_SDK_SHA512 \
-    /installDotNetCore.sh
+    /tmp/scripts/installDotNetCore.sh
 
 RUN set -ex \
     rm -rf /tmp/NuGetScratch \
@@ -77,8 +76,8 @@ RUN set -ex \
  && runtimesDir=$dotnetDir/runtimes \
  && mkdir -p $runtimesDir \
  && cd $runtimesDir \
- && . /tmp/__dotNetCoreSdkVersions.sh \
- && . /tmp/__dotNetCoreRunTimeVersions.sh \
+ && . /tmp/scripts/__dotNetCoreSdkVersions.sh \
+ && . /tmp/scripts/__dotNetCoreRunTimeVersions.sh \
  && mkdir $NET_CORE_APP_21 \
  && ln -s $NET_CORE_APP_21 2.1 \
  && ln -s 2.1 2 \

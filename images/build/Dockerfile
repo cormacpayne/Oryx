@@ -128,18 +128,6 @@ RUN chmod a+x /tmp/__nodeVersions.sh \
 COPY images/build/installNpm.sh /tmp
 RUN chmod +x /tmp/installNpm.sh
 RUN /tmp/installNpm.sh
-COPY images/receivePgpKeys.sh /tmp/scripts/receivePgpKeys.sh
-RUN chmod +x /tmp/scripts/receivePgpKeys.sh
-RUN set -ex \
- && . /tmp/__nodeVersions.sh \
- && /tmp/scripts/receivePgpKeys.sh 6A010C5166006599AA17F08146C2130DFD2497F5 \
- && curl -fsSLO --compressed "https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz" \
- && curl -fsSLO --compressed "https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz.asc" \
- && gpg --batch --verify yarn-v$YARN_VERSION.tar.gz.asc yarn-v$YARN_VERSION.tar.gz \
- && mkdir -p /opt/yarn \
- && tar -xzf yarn-v$YARN_VERSION.tar.gz -C /opt/yarn \
- && mv /opt/yarn/yarn-v$YARN_VERSION /opt/yarn/$YARN_VERSION \
- && rm yarn-v$YARN_VERSION.tar.gz.asc yarn-v$YARN_VERSION.tar.gz
 
 RUN set -ex \
  && ln -s 4.4.7 /opt/nodejs/4.4 \
