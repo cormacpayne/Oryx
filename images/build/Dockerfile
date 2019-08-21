@@ -16,6 +16,8 @@ RUN apt-get update \
         libunwind8 \
     && rm -rf /var/lib/apt/lists/*
 
+RUN mkdir -p /tmp/scripts
+
 # Install .NET Core
 FROM main AS dotnet-install
 RUN apt-get update \
@@ -26,30 +28,30 @@ RUN apt-get update \
         libunwind8 \
     && rm -rf /var/lib/apt/lists/*
 
-COPY build/__dotNetCoreSdkVersions.sh /tmp
-COPY build/__dotNetCoreRunTimeVersions.sh /tmp
-COPY images/build/installDotNetCore.sh /
-RUN chmod +x /installDotNetCore.sh
+COPY build/__dotNetCoreSdkVersions.sh /tmp/scripts
+COPY build/__dotNetCoreRunTimeVersions.sh /tmp/scripts
+COPY images/build/installDotNetCore.sh /tmp/scripts
+RUN chmod +x /tmp/scripts/installDotNetCore.sh
 
 # Check https://www.microsoft.com/net/platform/support-policy for support policy of .NET Core versions
 
-RUN . /tmp/__dotNetCoreSdkVersions.sh && \
+RUN . /tmp/scripts/__dotNetCoreSdkVersions.sh && \
     DOTNET_SDK_VER=$DOT_NET_CORE_11_SDK_VERSION \
     DOTNET_SDK_SHA=$DOT_NET_CORE_11_SDK_SHA512 \
     DOTNET_SDK_URL=https://dotnetcli.blob.core.windows.net/dotnet/Sdk/$DOTNET_SDK_VER/dotnet-dev-debian.9-x64.$DOTNET_SDK_VER.tar.gz \
     # To save disk space do not install packages for this old version which is soon going to be out of support
     INSTALL_PACKAGES=false \
-    /installDotNetCore.sh
+    /tmp/scripts/installDotNetCore.sh
 
-RUN . /tmp/__dotNetCoreSdkVersions.sh && \
+RUN . /tmp/scripts/__dotNetCoreSdkVersions.sh && \
     DOTNET_SDK_VER=$DOT_NET_CORE_22_SDK_VERSION \
     DOTNET_SDK_SHA=$DOT_NET_CORE_22_SDK_SHA512 \
-    /installDotNetCore.sh
+    /tmp/scripts/installDotNetCore.sh
 
-RUN . /tmp/__dotNetCoreSdkVersions.sh && \
+RUN . /tmp/scripts/__dotNetCoreSdkVersions.sh && \
     DOTNET_SDK_VER=$DOT_NET_CORE_30_SDK_VERSION_PREVIEW_NAME \
     DOTNET_SDK_SHA=$DOT_NET_CORE_30_SDK_SHA512 \
-    /installDotNetCore.sh
+    /tmp/scripts/installDotNetCore.sh
 
 RUN set -ex \
     rm -rf /tmp/NuGetScratch \
@@ -66,8 +68,8 @@ RUN set -ex \
  && sdksDir=$dotnetDir/sdks \
  && runtimesDir=$dotnetDir/runtimes \
  && cd $runtimesDir \
- && . /tmp/__dotNetCoreSdkVersions.sh \
- && . /tmp/__dotNetCoreRunTimeVersions.sh \
+ && . /tmp/scripts/__dotNetCoreSdkVersions.sh \
+ && . /tmp/scripts/__dotNetCoreRunTimeVersions.sh \
  # 1.1 sdk <-- 1.0 runtime's sdk
  && mkdir $NET_CORE_APP_10 \
  && ln -s $NET_CORE_APP_10 1.0 \
@@ -97,9 +99,10 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         jq \
     && rm -rf /var/lib/apt/lists/*
-COPY build/__nodeVersions.sh /tmp
-RUN chmod a+x /tmp/__nodeVersions.sh \
- && . /tmp/__nodeVersions.sh \
+RUN mkdir -p /tmp/scripts
+COPY build/__nodeVersions.sh /tmp/scripts
+RUN chmod a+x /tmp/scripts/__nodeVersions.sh \
+ && . /tmp/scripts/__nodeVersions.sh \
  && curl -sL https://git.io/n-install | bash -s -- -ny - \
  && ~/n/bin/n -d 4.4.7 \
  && ~/n/bin/n -d 4.5.0 \
@@ -125,9 +128,9 @@ RUN chmod a+x /tmp/__nodeVersions.sh \
  && ~/n/bin/n -d $NODE12_VERSION \
  && mv /usr/local/n/versions/node /opt/nodejs \
  && rm -rf /usr/local/n ~/n
-COPY images/build/installNpm.sh /tmp
-RUN chmod +x /tmp/installNpm.sh
-RUN /tmp/installNpm.sh
+COPY images/build/installNpm.sh /tmp/scripts
+RUN chmod +x /tmp/scripts/installNpm.sh
+RUN /tmp/scripts/installNpm.sh
 
 RUN set -ex \
  && ln -s 4.4.7 /opt/nodejs/4.4 \
@@ -152,7 +155,7 @@ RUN set -ex \
  && ln -s 10.1.0 /opt/nodejs/10.1 \
  && ln -s 10.10.0 /opt/nodejs/10.10 \
  && ln -s 10.14.2 /opt/nodejs/10.14 \
- && . /tmp/__nodeVersions.sh \
+ && . /tmp/scripts/__nodeVersions.sh \
  && ln -s $NODE6_VERSION /opt/nodejs/$NODE6_MAJOR_MINOR_VERSION \ 
  && ln -s $NODE6_MAJOR_MINOR_VERSION /opt/nodejs/6 \
  && ln -s $NODE12_VERSION /opt/nodejs/$NODE12_MAJOR_MINOR_VERSION \
@@ -183,17 +186,17 @@ FROM mcr.microsoft.com/oryx/python-build-base:3.8-${PYTHON_BASE_TAG} AS py38-bui
 FROM main AS python
 # https://github.com/docker-library/python/issues/147
 ENV PYTHONIOENCODING UTF-8
-COPY build/__pythonVersions.sh /tmp
+COPY build/__pythonVersions.sh /tmp/scripts
 COPY --from=py27-build-base /opt /opt
 COPY --from=py36-build-base /opt /opt
 COPY --from=py38-build-base /opt /opt
-RUN . /tmp/__pythonVersions.sh && set -ex \
+RUN . /tmp/scripts/__pythonVersions.sh && set -ex \
  && [ -d "/opt/python/$PYTHON27_VERSION" ] && echo /opt/python/$PYTHON27_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
  && [ -d "/opt/python/$PYTHON36_VERSION" ] && echo /opt/python/$PYTHON36_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
  && [ -d "/opt/python/$PYTHON38_VERSION" ] && echo /opt/python/$PYTHON38_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
  && ldconfig
 # The link from PYTHON38_VERSION to 3.8.0 exists because "3.8.0b1" isn't a valid SemVer string.
-RUN . /tmp/__pythonVersions.sh && set -ex \
+RUN . /tmp/scripts/__pythonVersions.sh && set -ex \
  && ln -s $PYTHON27_VERSION /opt/python/2.7 \
  && ln -s 2.7 /opt/python/2 \
  && ln -s $PYTHON36_VERSION /opt/python/3.6 \
@@ -201,11 +204,8 @@ RUN . /tmp/__pythonVersions.sh && set -ex \
  && ln -s $PYTHON38_VERSION /opt/python/3.8
 RUN set -ex \
  && cd /usr/local/bin \
- && cp -sn /opt/python/2/bin/* . \
- # Make sure the alias 'python' always refers to Python 2 by default
- && rm -f python \
- && ln -sf /opt/python/2/bin/python python
-
+ && cp -sn /opt/python/2/bin/* .
+  
 # This stage is a no-op and exists to satisfy a pattern of building different
 # stages in buildBuildImages.sh file
 FROM dotnet-install AS buildscriptbuilder
@@ -229,6 +229,11 @@ COPY --from=dotnet-install /opt/dotnet /opt/dotnet
 COPY --from=dotnet-install /var/nuget /var/nuget
 COPY --from=dotnet-install /usr/local/bin /usr/local/bin
 
+# Make sure the alias 'python' always refers to Python 2 by default
+RUN cd /usr/local/bin \
+ && rm -f python \
+ && ln -sf /opt/python/2/bin/python python
+
 # Copy NodeJs, NPM and Yarn related content
 COPY --from=node-install /opt /opt
 
@@ -237,6 +242,8 @@ COPY --from=php56-build-base /opt /opt
 COPY --from=php70-build-base /opt /opt
 COPY --from=php72-build-base /opt /opt
 RUN ln -s /opt/php/5.6 /opt/php/5
+
+RUN rm -rf /tmp/scripts
 
 ARG GIT_COMMIT=unspecified
 ARG BUILD_NUMBER=unspecified

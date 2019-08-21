@@ -29,6 +29,8 @@ RUN apt-get update \
         zip \
     && rm -rf /var/lib/apt/lists/*
 
+RUN mkdir -p /tmp/scripts
+
 # Install .NET Core
 FROM main AS dotnet-install
 RUN apt-get update \
@@ -93,21 +95,21 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         jq \
     && rm -rf /var/lib/apt/lists/*
-COPY build/__nodeVersions.sh /tmp
-RUN chmod a+x /tmp/__nodeVersions.sh \
- && . /tmp/__nodeVersions.sh \
+COPY build/__nodeVersions.sh /tmp/scripts
+RUN chmod a+x /tmp/scripts/__nodeVersions.sh \
+ && . /tmp/scripts/__nodeVersions.sh \
  && curl -sL https://git.io/n-install | bash -s -- -ny - \
  && ~/n/bin/n -d $NODE8_VERSION \
  && ~/n/bin/n -d $NODE10_VERSION \
  && mv /usr/local/n/versions/node /opt/nodejs \
  && rm -rf /usr/local/n ~/n
-COPY images/build/installNpm.sh /tmp
-RUN chmod +x /tmp/installNpm.sh
-RUN /tmp/installNpm.sh
-COPY images/receivePgpKeys.sh /tmp/scripts/receivePgpKeys.sh
+COPY images/build/installNpm.sh /tmp/scripts
+RUN chmod +x /tmp/scripts/installNpm.sh
+RUN /tmp/scripts/installNpm.sh
+COPY images/receivePgpKeys.sh /tmp/scripts
 RUN chmod +x /tmp/scripts/receivePgpKeys.sh
 RUN set -ex \
- && . /tmp/__nodeVersions.sh \
+ && . /tmp/scripts/__nodeVersions.sh \
  && /tmp/scripts/receivePgpKeys.sh 6A010C5166006599AA17F08146C2130DFD2497F5 \
  && curl -fsSLO --compressed "https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz" \
  && curl -fsSLO --compressed "https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz.asc" \
@@ -118,7 +120,7 @@ RUN set -ex \
  && rm yarn-v$YARN_VERSION.tar.gz.asc yarn-v$YARN_VERSION.tar.gz
 
 RUN set -ex \
- && . /tmp/__nodeVersions.sh \
+ && . /tmp/scripts/__nodeVersions.sh \
  && ln -s $NODE8_VERSION /opt/nodejs/$NODE8_MAJOR_MINOR_VERSION \
  && ln -s $NODE8_MAJOR_MINOR_VERSION /opt/nodejs/8 \
  && ln -s $NODE10_VERSION /opt/nodejs/$NODE10_MAJOR_MINOR_VERSION \
@@ -129,7 +131,7 @@ RUN set -ex \
  && ln -s 6.9 /opt/npm/6 \
  && ln -s 6 /opt/npm/latest
 RUN set -ex \
- && . /tmp/__nodeVersions.sh \
+ && . /tmp/scripts/__nodeVersions.sh \
  && ln -s $YARN_VERSION /opt/yarn/stable \
  && ln -s $YARN_VERSION /opt/yarn/latest \
  && ln -s $YARN_VERSION /opt/yarn/$YARN_MINOR_VERSION \
@@ -157,13 +159,13 @@ RUN apt-get update \
  && rm -rf /var/lib/apt/lists/*
 # https://github.com/docker-library/python/issues/147
 ENV PYTHONIOENCODING UTF-8
-COPY build/__pythonVersions.sh /tmp
+COPY build/__pythonVersions.sh /tmp/scripts
 COPY --from=py37-build-base /opt /opt
-RUN . /tmp/__pythonVersions.sh && set -ex \
+RUN . /tmp/scripts/__pythonVersions.sh && set -ex \
  && [ -d "/opt/python/$PYTHON37_VERSION" ] && echo /opt/python/$PYTHON37_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
  && ldconfig
 # The link from PYTHON38_VERSION to 3.8.0 exists because "3.8.0b1" isn't a valid SemVer string.
-RUN . /tmp/__pythonVersions.sh && set -ex \
+RUN . /tmp/scripts/__pythonVersions.sh && set -ex \
  && ln -s $PYTHON37_VERSION /opt/python/latest \
  && ln -s $PYTHON37_VERSION /opt/python/3.7 \
  && ln -s 3.7 /opt/python/3
@@ -269,6 +271,8 @@ RUN ln -s /opt/buildscriptgen/GenerateBuildScript /usr/local/bin/oryx
 # Oryx depends on the run script generators for most of its
 # `IProgrammingPlatform.GenerateBashRunScript()` implementations
 COPY --from=startupScriptGens /opt/startupcmdgen/ /opt/startupcmdgen/
+
+RUN rm -rf /tmp/scripts
 
 # Bake Application Insights key from pipeline variable into final image
 ARG AI_KEY

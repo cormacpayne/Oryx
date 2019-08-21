@@ -53,7 +53,6 @@ function BuildAndTagStage()
 	local stageTagName="$ACR_PUBLIC_PREFIX/$2"
 
 	echo
-	echo
 	echo "Building stage '$stageName' with tag '$stageTagName'..."
 	docker build --target $stageName -t $stageTagName $ctxArgs $BASE_TAG_BUILD_ARGS -f "$dockerFile" .
 }
@@ -119,6 +118,7 @@ mkdir -p "$ARTIFACTS_DIR/images"
 touch $ACR_BUILD_IMAGES_ARTIFACTS_FILE
 > $ACR_BUILD_IMAGES_ARTIFACTS_FILE
 
+echo
 echo "-------------Creating slim build image-------------------"
 buildDockerImage "$BUILD_IMAGES_SLIM_DOCKERFILE" \
 				"$ACR_SLIM_BUILD_IMAGE_REPO" \
