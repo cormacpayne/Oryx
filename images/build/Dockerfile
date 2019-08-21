@@ -215,6 +215,7 @@ RUN set -ex \
  && cd /usr/local/bin \
  && cp -sn /opt/python/2/bin/* . \
  # Make sure the alias 'python' always refers to Python 2 by default
+ && rm -f python \
  && ln -sf /opt/python/2/bin/python python
 
 # This stage is a no-op and exists to satisfy a pattern of building different

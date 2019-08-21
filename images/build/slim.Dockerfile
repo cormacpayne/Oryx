@@ -167,7 +167,7 @@ RUN . /tmp/__pythonVersions.sh && set -ex \
 RUN set -ex \
  && cd /usr/local/bin \
  && cp -sn /opt/python/3/bin/* . \
- # Make sure the alias 'python' always refers to Python 2 by default
+ # Make sure the alias 'python' always refers to Python 3 by default
  && ln -sf /opt/python/3/bin/python python
 
 # This stage is used only when building locally
