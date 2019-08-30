@@ -26,6 +26,26 @@ ARTIFACTS_FILE="$BASE_IMAGES_ARTIFACTS_FILE_PREFIX/$IMAGE_DIR_TO_BUILD-buildimag
 mkdir -p `dirname $ARTIFACTS_FILE`
 > $ARTIFACTS_FILE
 
+volumeHostDir="$ARTIFACTS_DIR/platformSdks"
+volumeContainerDir="/tmp/sdk"
+mkdir -p "$volumeHostDir"
+
+buildImage() {
+	local dockerFile="$1"
+	local imageName="$2"
+	echo "Building '$imageName'..."
+	docker build -f "$dockerFile" -t $imageName $__REPO_DIR
+	echo "$imageName" >> $ARTIFACTS_FILE
+}
+
+getCompressedSdk() {
+	local dockerFile="$1"
+	local imageName="$2"
+	buildImage $dockerFile $imageName
+	echo "Copying compressed sdk file to host directory..."
+	docker run -v $volumeHostDir:$volumeContainerDir $imageName bash -c "cp -f /tmp/compressedSdk/* /tmp/sdk"
+}
+
 case $IMAGE_DIR_TO_BUILD in
 	'python')
 		echo "Building Python base images"
@@ -34,18 +54,10 @@ case $IMAGE_DIR_TO_BUILD in
 		docker build -f $BUILD_IMAGE_PREFIX/python/prereqs/Dockerfile -t "python-build-prereqs" $__REPO_DIR
 
 		declare -r PYTHON_IMAGE_PREFIX="$ACR_DEV_NAME/public/oryx/python-build"
-
-		docker build -f $BUILD_IMAGE_PREFIX/python/2.7/Dockerfile -t "$PYTHON_IMAGE_PREFIX-2.7:$IMAGE_TAG" $__REPO_DIR
-		echo "$PYTHON_IMAGE_PREFIX-2.7:$IMAGE_TAG" >> $ARTIFACTS_FILE
-
-		docker build -f $BUILD_IMAGE_PREFIX/python/3.6/Dockerfile -t "$PYTHON_IMAGE_PREFIX-3.6:$IMAGE_TAG" $__REPO_DIR
-		echo "$PYTHON_IMAGE_PREFIX-3.6:$IMAGE_TAG" >> $ARTIFACTS_FILE
-
-		docker build -f $BUILD_IMAGE_PREFIX/python/3.7/Dockerfile -t "$PYTHON_IMAGE_PREFIX-3.7:$IMAGE_TAG" $__REPO_DIR
-		echo "$PYTHON_IMAGE_PREFIX-3.7:$IMAGE_TAG" >> $ARTIFACTS_FILE
-
-		docker build -f $BUILD_IMAGE_PREFIX/python/3.8/Dockerfile -t "$PYTHON_IMAGE_PREFIX-3.8:$IMAGE_TAG" $__REPO_DIR
-		echo "$PYTHON_IMAGE_PREFIX-3.8:$IMAGE_TAG" >> $ARTIFACTS_FILE
+		getCompressedSdk $BUILD_IMAGE_PREFIX/python/2.7/Dockerfile "$PYTHON_IMAGE_PREFIX-2.7:$IMAGE_TAG"
+		getCompressedSdk $BUILD_IMAGE_PREFIX/python/3.6/Dockerfile "$PYTHON_IMAGE_PREFIX-3.6:$IMAGE_TAG"
+		getCompressedSdk $BUILD_IMAGE_PREFIX/python/3.7/Dockerfile "$PYTHON_IMAGE_PREFIX-3.7:$IMAGE_TAG"
+		getCompressedSdk $BUILD_IMAGE_PREFIX/python/3.8/Dockerfile "$PYTHON_IMAGE_PREFIX-3.8:$IMAGE_TAG"
 		;;
 	'php')
 		echo "Building PHP base images"
@@ -54,18 +66,16 @@ case $IMAGE_DIR_TO_BUILD in
 		docker build -f $BUILD_IMAGE_PREFIX/php/prereqs/Dockerfile -t "php-build-prereqs" $__REPO_DIR
 
 		declare -r PHP_IMAGE_PREFIX="$ACR_DEV_NAME/public/oryx/php-build"
-
-		docker build -f $BUILD_IMAGE_PREFIX/php/5.6/Dockerfile -t "$PHP_IMAGE_PREFIX-5.6:$IMAGE_TAG" $__REPO_DIR
-		echo "$PHP_IMAGE_PREFIX-5.6:$IMAGE_TAG" >> $ARTIFACTS_FILE
-
-		docker build -f $BUILD_IMAGE_PREFIX/php/7.0/Dockerfile -t "$PHP_IMAGE_PREFIX-7.0:$IMAGE_TAG" $__REPO_DIR
-		echo "$PHP_IMAGE_PREFIX-7.0:$IMAGE_TAG" >> $ARTIFACTS_FILE
-
-		docker build -f $BUILD_IMAGE_PREFIX/php/7.2/Dockerfile -t "$PHP_IMAGE_PREFIX-7.2:$IMAGE_TAG" $__REPO_DIR
-		echo "$PHP_IMAGE_PREFIX-7.2:$IMAGE_TAG" >> $ARTIFACTS_FILE
-
-		docker build -f $BUILD_IMAGE_PREFIX/php/7.3/Dockerfile -t "$PHP_IMAGE_PREFIX-7.3:$IMAGE_TAG" $__REPO_DIR
-		echo "$PHP_IMAGE_PREFIX-7.3:$IMAGE_TAG" >> $ARTIFACTS_FILE
+		getCompressedSdk $BUILD_IMAGE_PREFIX/php/5.6/Dockerfile "$PHP_IMAGE_PREFIX-5.6:$IMAGE_TAG"
+		getCompressedSdk $BUILD_IMAGE_PREFIX/php/7.0/Dockerfile "$PHP_IMAGE_PREFIX-7.0:$IMAGE_TAG"
+		getCompressedSdk $BUILD_IMAGE_PREFIX/php/7.2/Dockerfile "$PHP_IMAGE_PREFIX-7.2:$IMAGE_TAG"
+		getCompressedSdk $BUILD_IMAGE_PREFIX/php/7.3/Dockerfile "$PHP_IMAGE_PREFIX-7.3:$IMAGE_TAG"
+		;;
+	'node')
+		echo "Installing Node base image"
+		echo
+		declare -r NODE_IMAGE_PREFIX="$ACR_DEV_NAME/public/oryx/node-build"
+		getCompressedSdk $BUILD_IMAGE_PREFIX/node/Dockerfile "$NODE_IMAGE_PREFIX:$IMAGE_TAG"
 		;;            
 	'yarn-cache')
 		echo "Building Yarn package cache base image"
