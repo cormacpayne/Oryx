@@ -1,0 +1,29 @@
+name: 'Oryx Build Action'
+description: 'Build an Azure web app using Oryx.'
+branding:
+  icon: cloud
+  color: white
+inputs:
+  sourceDirectory:
+    description: 'The source directory of the repository. If not set, the default source directory is the current working directory in the container.'
+    required: false
+  outputDirectory:
+    description: 'The directory where the output of the build will be copied to. If not set, the output will be copied to the source directory.'
+    required: false
+  platform:
+    description: 'The programming platform of the web app. The supported values are "dotnet", "nodejs", "php" and "python".'
+    required: false
+  platformVersion:
+    description: 'The version of the programming platform.'
+    required: false
+outputs:
+  outputDirectory:
+    description: 'The directory where the output of the build will be copied to.'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+    - ${{ inputs.sourceDirectory }}
+    - ${{ inputs.outputDirectory }}
+    - ${{ inputs.platform }}
+    - ${{ inputs.platformVersion }}
